@@ -1,8 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\EduTrack.Core.Domain\EduTrack.Core.Domain.csproj" />
     <ProjectReference Include="..\EduTrack.Core.Application\EduTrack.Core.Application.csproj" />
+    <ProjectReference Include="..\EduTrack.Core.Domain\EduTrack.Core.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.7">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <PropertyGroup>
@@ -12,3 +21,6 @@
   </PropertyGroup>
 
 </Project>
+
+
+
