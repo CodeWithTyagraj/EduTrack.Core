@@ -19,6 +19,7 @@ namespace EduTrack.Core.Infrastructure.Persistence
         public DbSet<Attendance> Attendances { get; set; }
         public DbSet<Marks> Marks { get; set; }
         public DbSet<Timetable> Timetables { get; set; }
+        public DbSet<User> Users { get; set; }
 
         // Agar aur entities hain to yahan add kar sakte ho\
 

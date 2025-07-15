@@ -2,26 +2,34 @@
 using EduTrack.Core.Application.Interfaces;
 using EduTrack.Core.Application.Services;
 using EduTrack.Core.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduTrack.Core.API.Controllers
 {
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
+
     public class StudentsController : ControllerBase
     {
       private readonly IStudentService _studentService;
-        public StudentsController(StudentService studentService)
+        public StudentsController(IStudentService studentService)
         {
             _studentService = studentService;
         }
 
-        [HttpGet]
+        [HttpGet("GetAllStudents")]
         public async Task<IActionResult> GetAllStudent()
         {
             var students = await _studentService.GetAllAsync();
-            return Ok(students);
+            if (students.Any())
+                return Ok(students);
+            return NotFound();
+            
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetStudentById{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var student = await _studentService.GetByIdAsync(id);
@@ -29,22 +37,24 @@ namespace EduTrack.Core.API.Controllers
                 return NotFound();           
                 return Ok(student);
         }
-        [HttpPost]
+
+        [HttpPost("AddStudents")]
         public async Task<IActionResult> AddAsync([FromBody] StudentCreateDto student)
         {
             await _studentService.AddAsync(student);
-            return Ok();
+            return Ok("Student Added Successfully");
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("UpdatestudnetbyId{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] StudentCreateDto student)
         {
-            if (id != student.Id) return BadRequest();
+            if (id != student.Id) 
+                return BadRequest();
             await _studentService.UpdateAsync(student);
             return Ok();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteStudentById{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _studentService.DeleteAsync(id);
