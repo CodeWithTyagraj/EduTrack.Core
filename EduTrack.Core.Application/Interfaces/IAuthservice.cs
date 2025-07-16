@@ -10,5 +10,8 @@ namespace EduTrack.Core.Application.Interfaces
     public interface IAuthservice
     {
         Task<LoginResponseDto?> LoginAsync(LoginRequestDto request);
+
+        Task<bool> SignUp(SignUpRequestDTO request);
+
     }
 }

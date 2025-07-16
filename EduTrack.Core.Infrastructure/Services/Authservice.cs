@@ -1,10 +1,12 @@
 ﻿using EduTrack.Core.Application;
 using EduTrack.Core.Application.DTOs;
 using EduTrack.Core.Application.Interfaces;
+using EduTrack.Core.Domain.Entities;
 using EduTrack.Core.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Crypto.Generators;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,6 +14,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using BCrypt.Net;
+using EduTrack.Core.Application.Mapper;
 
 
 namespace EduTrack.Core.Infrastructure.Services
@@ -28,13 +32,16 @@ namespace EduTrack.Core.Infrastructure.Services
         }
         public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto request)
         {
-            var users = await _context.Users.FirstOrDefaultAsync(x =>x.Username == request.Username && x.Password == request.Password);
-            if (users == null)
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Username == request.Username);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+                return null;
+
+            if (user == null)
                 return null;
             var Claims = new[]
             {
-                new Claim(ClaimTypes.Name, users.Username),
-                new Claim(ClaimTypes.Role,users.Role)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role,user.Role)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -50,6 +57,20 @@ namespace EduTrack.Core.Infrastructure.Services
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token)
             };
+        }
+
+        public async Task<bool> SignUp(SignUpRequestDTO request)
+        {
+           if( await _context.Users.AnyAsync(x => x.Username == request.UserName || x.Email == request.Email))
+            {
+                return false;
+            }
+         
+            var user = UserMapper.ToEntity(request);
+            await _context.Users.AddAsync(user);
+
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
