@@ -24,7 +24,7 @@ namespace EduTrack.Core.API.Controllers
             var result =await _authservice.LoginAsync(request);
             if (result == null)
             {
-                return Unauthorized("Invalid Credentials");
+                return Unauthorized("Invalid Credentials or UnAthorized User");
             }
             else
             { 

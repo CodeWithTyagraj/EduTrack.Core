@@ -1,6 +1,9 @@
-﻿using EduTrack.Core.Application;
+﻿using BCrypt.Net;
+using EduTrack.Core.Application;
 using EduTrack.Core.Application.DTOs;
 using EduTrack.Core.Application.Interfaces;
+using EduTrack.Core.Application.Mapper;
+using EduTrack.Core.Domain.Common;
 using EduTrack.Core.Domain.Entities;
 using EduTrack.Core.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -14,8 +17,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using BCrypt.Net;
-using EduTrack.Core.Application.Mapper;
 
 
 namespace EduTrack.Core.Infrastructure.Services
@@ -30,13 +31,14 @@ namespace EduTrack.Core.Infrastructure.Services
                 _context = context;
             _configuration = configuration;
         }
+        
         public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto request)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Username == request.Username);
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
                 return null;
 
-            if (user == null)
+            if (!AppRoles.All.Contains(user.Role))
                 return null;
             var Claims = new[]
             {
