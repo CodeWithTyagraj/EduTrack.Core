@@ -17,7 +17,7 @@ namespace EduTrack.Core.Application.Mapper
                 Id = student.Id,
                 FullName = student.FullName,
                 Email = student.Email
-                //  DepartmentName = student.Department?.Name ?? "N/A"
+               
             };
         }
         public static Student ToEntity(StudentCreateDto student)

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EduTrack.Core.API.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Admin,Teacher")]
     [ApiController]
     [Route("api/[controller]")]
 
